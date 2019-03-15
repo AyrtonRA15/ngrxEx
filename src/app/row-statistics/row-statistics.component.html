@@ -1,0 +1,18 @@
+<div class="statistics-container" *ngIf="statistics">
+  <div fxLayout fxLayoutAlign="space-between center">
+    <span>Rows Added</span>
+    <span>{{ statistics.rowsAdded }}</span>
+  </div>
+  <div fxLayout fxLayoutAlign="space-between center">
+    <span>Rows Deleted</span>
+    <span>{{ statistics.rowsDeleted }}</span>
+  </div>
+  <div fxLayout fxLayoutAlign="space-between center">
+    <span>Min Items / Row</span>
+    <span>{{ statistics.minLength }}</span>
+  </div>
+  <div fxLayout fxLayoutAlign="space-between center">
+    <span>Max Items / Row</span>
+    <span>{{ statistics.maxLength }}</span>
+  </div>
+</div>

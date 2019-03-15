@@ -1,0 +1,12 @@
+<div fxLayout fxLayoutAlign="center center">
+  <mat-form-field>
+    <input
+      matInput
+      placeholder="Type row items (comma separated)"
+      [(ngModel)]="row"
+    />
+  </mat-form-field>
+  <button mat-raised-button color="primary" (click)="createRow()">
+    Create
+  </button>
+</div>

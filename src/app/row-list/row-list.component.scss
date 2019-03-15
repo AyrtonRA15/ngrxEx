@@ -1,0 +1,27 @@
+.list-container {
+  overflow-x: auto;
+
+  .row-container {
+    padding: 8px 0;
+
+    .delete-icon {
+      min-width: 24px;
+      min-height: 24px;
+      margin-right: 8px;
+      font-weight: bold;
+      color: white;
+      background-color: #f44336;
+      border-radius: 45px;
+      cursor: pointer;
+    }
+
+    .item-container {
+      min-width: 80px;
+      min-height: 24px;
+      margin: 0 8px;
+      padding: 0 8px;
+      border-radius: 8px;
+      background-color: lightgray;
+    }
+  }
+}

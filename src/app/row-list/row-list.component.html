@@ -1,0 +1,25 @@
+<div class="list-container">
+  <div
+    *ngFor="let row of rows; let rowIndex = index"
+    fxLayout
+    fxLayoutAlign="start center"
+    class="row-container"
+  >
+    <div
+      class="delete-icon"
+      fxLayout
+      fxLayoutAlign="center center"
+      (click)="deleteRow(rowIndex)"
+    >
+      X
+    </div>
+    <div
+      *ngFor="let item of maxLengthValue; let itemIndex = index"
+      class="item-container"
+      fxLayout
+      fxLayoutAlign="center center"
+    >
+      {{ itemIndex < row.items.length ? row.items[itemIndex] : '' }}
+    </div>
+  </div>
+</div>

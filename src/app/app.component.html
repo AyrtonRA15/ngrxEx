@@ -1,7 +1,11 @@
 <div fxLayout="column" fxLayoutAlign="start center">
   <div class="app-container">
-    <app-create-row></app-create-row>
-    <app-row-list></app-row-list>
-    <app-row-statistics></app-row-statistics>
+    <app-create-row (create)="createRow($event)"></app-create-row>
+    <app-row-list
+      [rows]="rows"
+      [maxArrayLength]="maxArrayLength"
+      (delete)="deleteRow($event)"
+    ></app-row-list>
+    <app-row-statistics [statistics]="statistics"></app-row-statistics>
   </div>
 </div>

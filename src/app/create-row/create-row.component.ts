@@ -1,7 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
-import * as RowActions from './../actions/list.actions';
-import * as fromList from '../reducers/list.reducer';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Row } from '../models/row.model';
 
 @Component({
   selector: 'app-create-row',
@@ -11,15 +9,15 @@ import * as fromList from '../reducers/list.reducer';
 export class CreateRowComponent implements OnInit {
   row: string;
 
-  constructor(private store: Store<fromList.State>) {}
+  @Output() create: EventEmitter<Row> = new EventEmitter();
+
+  constructor() {}
 
   ngOnInit() {}
 
   createRow() {
     if (this.row) {
-      this.store.dispatch(
-        new RowActions.AddRow({ items: this.row.split(',') })
-      );
+      this.create.emit({ items: this.row.split(',') });
     }
   }
 }

@@ -1,7 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
-
-import * as fromList from '../reducers/list.reducer';
+import { Component, OnInit, Input } from '@angular/core';
 import { Statistics } from '../models/statistics.model';
 
 @Component({
@@ -10,15 +7,9 @@ import { Statistics } from '../models/statistics.model';
   styleUrls: ['./row-statistics.component.scss']
 })
 export class RowStatisticsComponent implements OnInit {
-  statistics: Statistics;
+  @Input() statistics: Statistics;
 
-  constructor(private store: Store<fromList.State>) {}
+  constructor() {}
 
-  ngOnInit() {
-    this.store
-      .select(fromList.getStatisticsSelector)
-      .subscribe((statistics: Statistics) => {
-        this.statistics = statistics;
-      });
-  }
+  ngOnInit() {}
 }

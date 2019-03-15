@@ -1,9 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Row } from '../models/row.model';
-
-import * as RowActions from '../actions/list.actions';
-import * as fromList from '../reducers/list.reducer';
 
 @Component({
   selector: 'app-row-list',
@@ -11,25 +7,19 @@ import * as fromList from '../reducers/list.reducer';
   styleUrls: ['./row-list.component.scss']
 })
 export class RowListComponent implements OnInit {
-  rows: Row[] = [];
-  maxLength = 0;
+  @Input() rows: Row[];
+  @Input() maxArrayLength: number;
+  @Output() delete: EventEmitter<number> = new EventEmitter();
 
-  constructor(private store: Store<fromList.State>) {}
+  constructor() {}
 
-  ngOnInit() {
-    this.store
-      .select(fromList.getAllSelector)
-      .subscribe((appState: fromList.State) => {
-        this.maxLength = appState.statistics.maxLength;
-        this.rows = appState.rows;
-      });
-  }
+  ngOnInit() {}
 
   deleteRow(index: number) {
-    this.store.dispatch(new RowActions.DeleteRow(index));
+    this.delete.emit(index);
   }
 
   get maxLengthValue(): number[] {
-    return Array(this.maxLength);
+    return Array(this.maxArrayLength);
   }
 }

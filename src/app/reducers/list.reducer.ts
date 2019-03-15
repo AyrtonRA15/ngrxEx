@@ -82,14 +82,8 @@ export function reducer(
 export const getListState = createFeatureSelector('listState');
 
 export const getAll = (state: State) => state;
-export const getStatistics = (state: State) => state.statistics;
 
 export const getAllSelector = createSelector(
   getListState,
   getAll
-);
-
-export const getStatisticsSelector = createSelector(
-  getListState,
-  getStatistics
 );

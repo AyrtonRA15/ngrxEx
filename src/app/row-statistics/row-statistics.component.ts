@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Statistics } from '../models/statistics.model';
 
 @Component({
@@ -6,10 +6,8 @@ import { Statistics } from '../models/statistics.model';
   templateUrl: './row-statistics.component.html',
   styleUrls: ['./row-statistics.component.scss']
 })
-export class RowStatisticsComponent implements OnInit {
-  @Input() statistics: Statistics;
+export class RowStatisticsComponent {
+  @Input() public statistics: Statistics;
 
   constructor() {}
-
-  ngOnInit() {}
 }

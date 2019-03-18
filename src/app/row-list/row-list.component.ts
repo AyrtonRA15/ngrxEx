@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Row } from '../models/row.model';
 
 @Component({
@@ -6,16 +6,14 @@ import { Row } from '../models/row.model';
   templateUrl: './row-list.component.html',
   styleUrls: ['./row-list.component.scss']
 })
-export class RowListComponent implements OnInit {
-  @Input() rows: Row[];
-  @Input() maxArrayLength: number;
-  @Output() delete: EventEmitter<number> = new EventEmitter();
+export class RowListComponent {
+  @Input() public rows: Row[];
+  @Input() public maxArrayLength: number;
+  @Output() public delete: EventEmitter<number> = new EventEmitter();
 
   constructor() {}
 
-  ngOnInit() {}
-
-  deleteRow(index: number) {
+  deleteRow(index: number): void {
     this.delete.emit(index);
   }
 

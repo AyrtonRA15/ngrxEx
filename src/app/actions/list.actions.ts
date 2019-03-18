@@ -5,13 +5,13 @@ export const ADD_ROW = '[ROW] Add';
 export const DELETE_ROW = '[ROW] Delete';
 
 export class AddRow implements Action {
-  readonly type = ADD_ROW;
+  public readonly type = ADD_ROW;
 
   constructor(public payload: Row) {}
 }
 
 export class DeleteRow implements Action {
-  readonly type = DELETE_ROW;
+  public readonly type = DELETE_ROW;
 
   constructor(public payload: number) {}
 }

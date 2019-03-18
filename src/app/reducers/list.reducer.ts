@@ -81,9 +81,21 @@ export function reducer(
 
 export const getListState = createFeatureSelector('listState');
 
-export const getAll = (state: State) => state;
+export const getRows = (state: State) => state.rows;
+export const getStatistics = (state: State) => state.statistics;
+export const getMaxLength = (state: State) => state.statistics.maxLength;
 
-export const getAllSelector = createSelector(
+export const getRowsSelector = createSelector(
   getListState,
-  getAll
+  getRows
+);
+
+export const getStatisticsSelector = createSelector(
+  getListState,
+  getStatistics
+);
+
+export const getMaxLengthSelector = createSelector(
+  getListState,
+  getMaxLength
 );

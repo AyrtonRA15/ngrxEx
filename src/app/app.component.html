@@ -2,10 +2,10 @@
   <div class="app-container">
     <app-create-row (create)="createRow($event)"></app-create-row>
     <app-row-list
-      [rows]="rows"
-      [maxArrayLength]="maxArrayLength"
+      [rows]="rows$ | async"
+      [maxArrayLength]="maxArrayLength$ | async"
       (delete)="deleteRow($event)"
     ></app-row-list>
-    <app-row-statistics [statistics]="statistics"></app-row-statistics>
+    <app-row-statistics [statistics]="statistics$ | async"></app-row-statistics>
   </div>
 </div>

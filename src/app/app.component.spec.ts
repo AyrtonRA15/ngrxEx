@@ -1,20 +1,20 @@
 import { TestBed, async, ComponentFixture } from '@angular/core/testing';
+import {
+  DebugElement,
+  Component,
+  Output,
+  EventEmitter,
+  Input
+} from '@angular/core';
+
+import { By } from '@angular/platform-browser';
+import { Observable, of, BehaviorSubject } from 'rxjs';
 import { AppComponent } from './app.component';
 import { Store } from '@ngrx/store';
-import * as fromList from './reducers/list.reducer';
-import * as RowActions from './actions/list.actions';
-import { CreateRowComponent } from './create-row/create-row.component';
-import { RowStatisticsComponent } from './row-statistics/row-statistics.component';
-import { RowListComponent } from './row-list/row-list.component';
-import { DebugElement } from '@angular/core';
-import { By } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { Observable, of } from 'rxjs';
 import { Row } from './models/row.model';
 import { Statistics } from './models/statistics.model';
-import { MatInputModule } from '@angular/material/input';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import * as fromList from './reducers/list.reducer';
+import * as RowActions from './actions/list.actions';
 
 export class DataStub {
   public getStateMock(): fromList.State {
@@ -39,42 +39,68 @@ export class DataStub {
   }
 }
 
-const storeStub = {
-  select: jasmine.createSpy('select'),
-  dispatch: jasmine.createSpy('dispatch')
-};
+@Component({ selector: 'app-create-row', template: '' })
+class CreateRowStubComponent {
+  @Output() public create: EventEmitter<Row> = new EventEmitter();
+}
+
+@Component({ selector: 'app-row-list', template: '' })
+class RowListStubComponent {
+  @Input() public rows: Row[];
+  @Input() public maxArrayLength: number;
+  @Output() public delete: EventEmitter<number> = new EventEmitter();
+}
+
+@Component({ selector: 'app-row-statistics', template: '' })
+class RowStatisticsStubComponent {
+  @Input() public statistics: Statistics;
+}
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
   let component: AppComponent;
   let debugElement: DebugElement;
-  let createRowComponent: CreateRowComponent;
-  let rowListComponent: RowListComponent;
-  let rowStatisticsComponent: RowStatisticsComponent;
+  let createRowStubComponent: CreateRowStubComponent;
+  let rowListStubComponent: RowListStubComponent;
+  let rowStatisticsStubComponent: RowStatisticsStubComponent;
   let dataStub: DataStub;
   let mockRows$: Observable<Row[]>;
   let mockStatistics$: Observable<Statistics>;
   let mockMaxArrayLength$: Observable<number>;
   let store: Store<fromList.State>;
 
+  let rowsSubject: BehaviorSubject<Row[]>;
+  let statisticsSubject: BehaviorSubject<Statistics>;
+  let maxArrayLengthSubject: BehaviorSubject<number>;
+
   beforeEach(async(() => {
+    rowsSubject = new BehaviorSubject(fromList.initialState.rows);
+    statisticsSubject = new BehaviorSubject(fromList.initialState.statistics);
+    maxArrayLengthSubject = new BehaviorSubject(0);
+
     TestBed.configureTestingModule({
-      imports: [
-        NoopAnimationsModule,
-        FormsModule,
-        MatFormFieldModule,
-        MatInputModule
-      ],
       declarations: [
         AppComponent,
-        CreateRowComponent,
-        RowListComponent,
-        RowStatisticsComponent
+        CreateRowStubComponent,
+        RowListStubComponent,
+        RowStatisticsStubComponent
       ],
       providers: [
         {
           provide: Store,
-          useValue: storeStub
+          useValue: {
+            select: jasmine.createSpy('select'),
+            dispatch: jasmine.createSpy('select').and.callFake(selector => {
+              switch (selector) {
+                case fromList.getRowsSelector:
+                  return rowsSubject.asObservable();
+                case fromList.getStatisticsSelector:
+                  return statisticsSubject.asObservable();
+                case fromList.getMaxLengthSelector:
+                  return maxArrayLengthSubject.asObservable();
+              }
+            })
+          }
         }
       ]
     }).compileComponents();
@@ -85,12 +111,14 @@ describe('AppComponent', () => {
     component = fixture.componentInstance;
     debugElement = fixture.debugElement;
     store = TestBed.get(Store);
-    createRowComponent = debugElement.query(By.directive(CreateRowComponent))
-      .componentInstance;
-    rowListComponent = debugElement.query(By.directive(RowListComponent))
-      .componentInstance;
-    rowStatisticsComponent = debugElement.query(
-      By.directive(RowStatisticsComponent)
+    createRowStubComponent = debugElement.query(
+      By.directive(CreateRowStubComponent)
+    ).componentInstance;
+    rowListStubComponent = debugElement.query(
+      By.directive(RowListStubComponent)
+    ).componentInstance;
+    rowStatisticsStubComponent = debugElement.query(
+      By.directive(RowStatisticsStubComponent)
     ).componentInstance;
     // Mock data
     dataStub = new DataStub();
@@ -99,16 +127,36 @@ describe('AppComponent', () => {
     mockMaxArrayLength$ = dataStub.generateMockMaxArrayLength();
   });
 
+  afterEach(() => {
+    rowsSubject.complete();
+    statisticsSubject.complete();
+    maxArrayLengthSubject.complete();
+  });
+
   it('should be readily initialized', () => {
     expect(component).toBeDefined();
   });
 
   it('should select different slices from store', () => {
-    expect(store.select).toHaveBeenCalledWith(fromList.getRowsSelector);
+    rowsSubject.next(dataStub.getStateMock().rows);
+    fixture.detectChanges();
+    expect(rowListStubComponent.rows).toEqual(dataStub.getStateMock().rows);
 
-    expect(store.select).toHaveBeenCalledWith(fromList.getStatisticsSelector);
+    statisticsSubject.next(dataStub.getStateMock().statistics);
+    fixture.detectChanges();
+    expect(rowStatisticsStubComponent.statistics).toEqual(
+      dataStub.getStateMock().statistics
+    );
 
-    expect(store.select).toHaveBeenCalledWith(fromList.getMaxLengthSelector);
+    maxArrayLengthSubject.next(dataStub.getStateMock().statistics.maxLength);
+    fixture.detectChanges();
+    expect(rowListStubComponent.maxArrayLength).toEqual(
+      dataStub.getStateMock().statistics.maxLength
+    );
+
+    // expect(store.select).toHaveBeenCalledWith(fromList.getStatisticsSelector);
+
+    // expect(store.select).toHaveBeenCalledWith(fromList.getMaxLengthSelector);
   });
 
   it('should pass properties to child components', () => {
@@ -118,11 +166,11 @@ describe('AppComponent', () => {
 
     fixture.detectChanges();
 
-    expect(rowListComponent.rows).toEqual(dataStub.getStateMock().rows);
-    expect(rowListComponent.maxArrayLength).toEqual(
+    expect(rowListStubComponent.rows).toEqual(dataStub.getStateMock().rows);
+    expect(rowListStubComponent.maxArrayLength).toEqual(
       dataStub.getStateMock().statistics.maxLength
     );
-    expect(rowStatisticsComponent.statistics).toEqual(
+    expect(rowStatisticsStubComponent.statistics).toEqual(
       dataStub.getStateMock().statistics
     );
   });
@@ -130,7 +178,7 @@ describe('AppComponent', () => {
   it('should dispatch create action when Create Button clicked', () => {
     const mockRow: Row = dataStub.getStateMock().rows[0];
 
-    createRowComponent.create.emit(mockRow);
+    createRowStubComponent.create.emit(mockRow);
     fixture.detectChanges();
 
     expect(store.dispatch).toHaveBeenCalledWith(new RowActions.AddRow(mockRow));
@@ -139,7 +187,7 @@ describe('AppComponent', () => {
   it('should dispatch delete action when Delete Button clicked', () => {
     const mockIndex = 0;
 
-    rowListComponent.delete.emit(mockIndex);
+    rowListStubComponent.delete.emit(mockIndex);
     fixture.detectChanges();
 
     expect(store.dispatch).toHaveBeenCalledWith(

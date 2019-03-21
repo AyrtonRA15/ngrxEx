@@ -1,4 +1,9 @@
-import { TestBed, async, ComponentFixture } from '@angular/core/testing';
+import {
+  TestBed,
+  async,
+  ComponentFixture,
+  inject
+} from '@angular/core/testing';
 import {
   DebugElement,
   Component,
@@ -8,7 +13,7 @@ import {
 } from '@angular/core';
 
 import { By } from '@angular/platform-browser';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, from } from 'rxjs';
 import { AppComponent } from './app.component';
 import { Store } from '@ngrx/store';
 import { Row } from './models/row.model';
@@ -40,7 +45,6 @@ describe('AppComponent', () => {
   let createRowStubComponent: CreateRowStubComponent;
   let rowListStubComponent: RowListStubComponent;
   let rowStatisticsStubComponent: RowStatisticsStubComponent;
-  let store: Store<fromList.State>;
 
   let rowsSubject: BehaviorSubject<Row[]>;
   let statisticsSubject: BehaviorSubject<Statistics>;
@@ -83,7 +87,6 @@ describe('AppComponent', () => {
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
     debugElement = fixture.debugElement;
-    store = TestBed.get(Store);
     createRowStubComponent = debugElement.query(
       By.directive(CreateRowStubComponent)
     ).componentInstance;
@@ -173,23 +176,29 @@ describe('AppComponent', () => {
     });
   });
 
-  it('should dispatch create action when Create Button clicked', () => {
-    const row: Row = { items: ['1'] };
+  it('should dispatch create action when Create Button clicked', inject(
+    [Store],
+    (store: Store<fromList.State>) => {
+      const row: Row = { items: ['1'] };
 
-    createRowStubComponent.create.emit(row);
-    fixture.detectChanges();
+      createRowStubComponent.create.emit(row);
+      fixture.detectChanges();
 
-    expect(store.dispatch).toHaveBeenCalledWith(new RowActions.AddRow(row));
-  });
+      expect(store.dispatch).toHaveBeenCalledWith(new RowActions.AddRow(row));
+    }
+  ));
 
-  it('should dispatch delete action when Delete Button clicked', () => {
-    const index = 0;
+  it('should dispatch delete action when Delete Button clicked', inject(
+    [Store],
+    (store: Store<fromList.State>) => {
+      const index = 0;
 
-    rowListStubComponent.delete.emit(index);
-    fixture.detectChanges();
+      rowListStubComponent.delete.emit(index);
+      fixture.detectChanges();
 
-    expect(store.dispatch).toHaveBeenCalledWith(
-      new RowActions.DeleteRow(index)
-    );
-  });
+      expect(store.dispatch).toHaveBeenCalledWith(
+        new RowActions.DeleteRow(index)
+      );
+    }
+  ));
 });
